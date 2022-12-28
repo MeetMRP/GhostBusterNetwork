@@ -12,6 +12,8 @@ from django.urls import reverse
 from django.core.mail import EmailMessage
 import jwt
 from django.conf import settings
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class RegisterApi(GenericAPIView):
     permission_classes = (AllowAny, )
@@ -44,7 +46,12 @@ class RegisterApi(GenericAPIView):
         user_data['message'] = 'Check email to verify yourself'
         return Response(user_data, status=status.HTTP_201_CREATED)
 
-class VerifyEmail(GenericAPIView):
+class VerifyEmail(APIView):
+    serializer_class = EmailVerificationSerializer
+
+    #added token query for swagger docs
+    token_param_config = openapi.Parameter(name='token', in_=openapi.IN_QUERY, description='Enter the access token', type=openapi.TYPE_STRING)
+    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
         try:
@@ -60,3 +67,12 @@ class VerifyEmail(GenericAPIView):
         
         except jwt.exceptions.DecodeError:
             return Response({'error':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class LoginApi(GenericAPIView):
+    serializer_class=LoginSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

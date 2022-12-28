@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from phonenumber_field.modelfields import PhoneNumberField
 from .managers import CustomUserManager
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class user(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, unique=True)
@@ -30,3 +31,11 @@ class user(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
+    
+    def tokens(self):
+        refresh_token = RefreshToken.for_user(self)
+        access_token = RefreshToken.for_user(self).access_token
+        return{
+            'refresh token' : str(refresh_token),
+            'access token' : str(access_token)
+        }
