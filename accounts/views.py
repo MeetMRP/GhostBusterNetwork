@@ -14,6 +14,7 @@ import jwt
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from django.contrib.auth import authenticate, login, logout
 
 class RegisterApi(GenericAPIView):
     permission_classes = (AllowAny, )

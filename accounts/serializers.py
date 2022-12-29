@@ -60,7 +60,7 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Account disabled, contact admin')
         if not request_user.is_verified:
             raise AuthenticationFailed('Email is not verified')
-        
+
         return {
             'username' : request_user.username,
             'tokens' : request_user.tokens
