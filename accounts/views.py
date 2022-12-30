@@ -14,8 +14,12 @@ import jwt
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode 
 
+
+#new user registration
 class RegisterApi(GenericAPIView):
     permission_classes = (AllowAny, )
     serializer_class = RegisterSerializer
@@ -35,7 +39,7 @@ class RegisterApi(GenericAPIView):
 
         #email sending
         email_subject = 'Email verification.'
-        email_body = f'Hi {request_user.f_name} {request_user.l_name} ({request_user.username})\nUse the link below to verify yourself.\n {abs_url}\n\n(NOTE:This is a system generated mail do not reply to it.)'
+        email_body = f'Hi, {request_user.f_name} {request_user.l_name} ({request_user.username})\nUse the link below to verify yourself.\n {abs_url}\n\n(NOTE:This is a system generated mail do not reply to it.)'
         email_receiver = request_user.email
         email = EmailMessage(
                 subject=email_subject, 
@@ -47,6 +51,8 @@ class RegisterApi(GenericAPIView):
         user_data['message'] = 'Check email to verify yourself'
         return Response(user_data, status=status.HTTP_201_CREATED)
 
+
+#email verification
 class VerifyEmail(APIView):
     serializer_class = EmailVerificationSerializer
 
@@ -69,6 +75,8 @@ class VerifyEmail(APIView):
         except jwt.exceptions.DecodeError:
             return Response({'error':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
         
+
+#existing user login
 class LoginApi(GenericAPIView):
     serializer_class=LoginSerializer
 
@@ -77,3 +85,63 @@ class LoginApi(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+#Sending an email to request password reset 
+class RequestPasswordResetEmail(GenericAPIView):
+    serializer_class = RequestPasswordResetEmailSerializers
+
+    def post(self, request):
+        data = {
+            'request': request,
+            'data': request.data
+        }
+        serializer = self.get_serializer(data=data)
+        email = request.data['email']
+        print(email)
+        if user.objects.filter(email=email).exists():
+            request_user = user.objects.get(email=email)
+            uidb64 = urlsafe_base64_encode(smart_bytes(request_user.id))
+            token = PasswordResetTokenGenerator().make_token(request_user)
+
+            #generating the abosulte url
+            current_site = get_current_site(request).domain
+            url_path = reverse('passowrd-reset-check', kwargs={'uidb64': uidb64, 'token': token})
+            abs_url = 'http//' + current_site + url_path
+            
+            #email sending
+            email_subject = 'Password reset.'
+            email_body = f'Hi, {request_user.f_name} {request_user.l_name} ({request_user.username})\nUse the link below to reset your password.\n {abs_url}\n\n(NOTE:This is a system generated mail do not reply to it.)'
+            email_receiver = request_user.email
+            email = EmailMessage(
+                    subject=email_subject, 
+                    body=email_body, 
+                    to=[email_receiver]
+                    )
+            email.send()
+        return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+
+
+#Check if user exists also check token and uidb64
+class PasswordTokenCheckApi(GenericAPIView):
+    def get(self, request, uidb64, token):
+        try:
+            user_id = smart_str(urlsafe_base64_decode(uidb64))
+            request_user = user.objects.get(id=user_id)
+
+            if not PasswordResetTokenGenerator().check_token(request_user, token):
+                return Response({'error': 'Token is not valid, please request a new one'})
+            
+            return Response({'success': True, 'message': 'Valid Credentials', 'uidb64': uidb64, 'token': token})
+        except DjangoUnicodeDecodeError:
+            return Response({'error': 'Connot decode the token, please request a new one'})
+
+
+#set new password
+class SetNewPassowrdApi(GenericAPIView):
+    serializer_class = SetNewPassowrdApiSerializer
+
+    def patch(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({'success': True, 'message': 'Password Reset successfull'}, status=status.HTTP_200_OK)
