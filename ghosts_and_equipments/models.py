@@ -12,7 +12,12 @@ class Ghost(models.Model):
     last_encounter_time = models.TimeField(blank=True)
     last_encounter_place = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        return self.ghost_name
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
     use = models.TextField()
     number_of_units = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name

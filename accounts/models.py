@@ -24,14 +24,16 @@ class user(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['email', ]
 
     def __str__(self):
-        return self.username
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
+        return self.username + ' (' + self.designation() + ')'
     
+    def designation(self):
+        if self.is_staff == True:
+            return 'staff'
+        if self.is_superuser == True:
+            return 'superuser'
+        else:
+            return 'user'
+
     def tokens(self):
         refresh_token = RefreshToken.for_user(self)
         access_token = RefreshToken.for_user(self).access_token
