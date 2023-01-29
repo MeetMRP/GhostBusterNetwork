@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     #apps installed
     'accounts',
     'ghosts_and_equipments',
+    'missions',
 ]
 
 

@@ -22,13 +22,15 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers
 from ghosts_and_equipments import views as GEViews
+from missions import views as MViews
+
 
 #swagger docs
 schema_view = get_schema_view(
     openapi.Info(
         title="Ghost Buster Network API",
         default_version='v1',
-        description="Backend database build no Django Rest API",
+        description="Backend database build on Django Rest API",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="meetpatelmrp1005@gmail.com"),
         license=openapi.License(name="BSD License"),
@@ -37,10 +39,17 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
+
+#ghost and equipments routers
 GhostRouter = routers.DefaultRouter()
 GhostRouter.register('', GEViews.GhostApi, basename='Ghosts')
 EquipmentrRouter = routers.DefaultRouter()
 EquipmentrRouter.register('', GEViews.EquipmentApi, basename='Equipments')
+
+#missions router
+MissionsRouter = routers.DefaultRouter()
+MissionsRouter.register('', MViews.MissionsApi, basename='Missionss')
+
 
 urlpatterns = [
     #swagger docs
@@ -50,9 +59,9 @@ urlpatterns = [
     #router urls
     path('ghost/', include(GhostRouter.urls), name='Ghosts'),
     path('equipment/', include(EquipmentrRouter.urls), name='Ghosts'),
+    path('mission/', include(MissionsRouter.urls), name='Missions'),
 
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
-
-    
+   
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
