@@ -40,16 +40,11 @@ schema_view = get_schema_view(
 )
 
 
-#ghost and equipments routers
-GhostRouter = routers.DefaultRouter()
-GhostRouter.register('', GEViews.GhostApi, basename='Ghosts')
-EquipmentrRouter = routers.DefaultRouter()
-EquipmentrRouter.register('', GEViews.EquipmentApi, basename='Equipments')
-
-#missions router
-MissionsRouter = routers.DefaultRouter()
-MissionsRouter.register('', MViews.MissionsApi, basename='Missionss')
-
+#routers
+Router = routers.DefaultRouter()
+Router.register('ghost', GEViews.GhostApi, basename='Ghosts')
+Router.register('equipment', GEViews.EquipmentApi, basename='Equipments')
+Router.register('mission', MViews.MissionsApi, basename='Missions')
 
 urlpatterns = [
     #swagger docs
@@ -57,11 +52,9 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     #router urls
-    path('ghost/', include(GhostRouter.urls), name='Ghosts'),
-    path('equipment/', include(EquipmentrRouter.urls), name='Ghosts'),
-    path('mission/', include(MissionsRouter.urls), name='Missions'),
+    path('', include(Router.urls), name='routers'),
 
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
+    path('account/', include('accounts.urls')),
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

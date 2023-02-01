@@ -27,10 +27,10 @@ class user(AbstractBaseUser, PermissionsMixin):
         return self.username + ' (' + self.designation() + ')'
     
     def designation(self):
-        if self.is_staff == True:
-            return 'staff'
         if self.is_superuser == True:
             return 'superuser'
+        if self.is_staff == True:
+            return 'staff'
         else:
             return 'user'
 

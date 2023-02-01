@@ -15,7 +15,7 @@ class Ghost(models.Model):
     def __str__(self):
         return self.ghost_name
 class Equipment(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, primary_key=True)
     use = models.TextField()
     number_of_units = models.PositiveIntegerField()
 
