@@ -1,5 +1,6 @@
 from accounts.models import user
 import random
+from django.contrib import auth
 import os
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -28,8 +29,8 @@ def register_social_user(provider, user_id, email, name):
         User.auth_provide = provider
         User.save()
 
-        new_user = authenticate(
-            email = email, password = os.environ.get('SOCIAL_PASS')
+        new_user = auth.authenticate(
+            username = User['username'], password = os.environ.get('SOCIAL_PASS')
         )
 
         return {
