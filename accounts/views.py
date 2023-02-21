@@ -123,6 +123,7 @@ class RequestPasswordResetEmail(GenericAPIView):
 
 #Check if user exists also check token and uidb64
 class PasswordTokenCheckApi(GenericAPIView):
+    serializer_class = []
     def get(self, request, uidb64, token):
         try:
             user_id = smart_str(urlsafe_base64_decode(uidb64))

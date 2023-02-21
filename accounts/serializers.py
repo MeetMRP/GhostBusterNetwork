@@ -7,7 +7,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-
+from allauth.account.models import EmailAddress
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=user.objects.all())])
@@ -59,11 +59,18 @@ class LoginSerializer(serializers.ModelSerializer):
         password = attrs.get('password', )
 
         request_user = auth.authenticate(username=username, password=password)
+        if request_user != None:
+            email1 = request_user.email
+            email = EmailAddress.objects.filter(email=email1)
+            if email.exists():
+                request_user.is_verified = True
+                request_user.save()
+        
         if not request_user:
             raise AuthenticationFailed('Invalid credintials, try again')
         if not request_user.is_active:
             raise AuthenticationFailed('Account disabled, contact admin')
-        if not request_user.is_verified:
+        if not request_user.is_verified :
             raise AuthenticationFailed('Email is not verified')
 
         return {

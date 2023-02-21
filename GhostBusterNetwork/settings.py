@@ -38,18 +38,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     #other
     'rest_framework', #rest framework
     'drf_yasg', #swagger docs
-    'django_filters', #django filters
 
     #apps installed
     'accounts',
     'ghosts_and_equipments',
     'missions',
-]
+    'oauth',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+]
 
 #added the default authentication class as JWT-Authentication.
 REST_FRAMEWORK = {

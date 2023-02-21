@@ -46,15 +46,18 @@ Router.register('ghost', GEViews.GhostApi, basename='Ghosts')
 Router.register('equipment', GEViews.EquipmentApi, basename='Equipments')
 Router.register('mission', MViews.MissionsApi, basename='Missions')
 
+
 urlpatterns = [
-    #swagger docs
+    #swagger docs urls
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     #router urls
     path('', include(Router.urls), name='routers'),
 
+
     path('admin/', admin.site.urls),
-    path('account/', include('accounts.urls')),
+    path('account/', include('accounts.urls'), name='accounts'),
+    path('social_auth/', include(('oauth.urls', 'oauth'), namespace='oauth')),
    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
