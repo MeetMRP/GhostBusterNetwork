@@ -16,7 +16,7 @@ class GhostApi(ModelViewSet):
         'retrieve': [IsAuthenticated],
         'update': [IsAdminUser],
         'destroy': [IsAdminUser],
-    }
+    } 
 
     def get_permissions(self):
         try:
@@ -31,3 +31,9 @@ class EquipmentApi(ModelViewSet):
     serializer_class = EquipmentSerialisers
     authentication_classes = [JWTAuthentication]
     permission_classes=[IsAdminUser]
+
+class EctoplasmApi(ModelViewSet):
+    queryset = Ectoplasm.objects.all()
+    serializer_class = EctoplasmSerialisers
+    authentication_classes = [JWTAuthentication]
+    permission_classes=[AllowAny]

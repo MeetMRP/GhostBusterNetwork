@@ -1,4 +1,5 @@
 from django.db import models
+from location_field.models.plain import PlainLocationField
 
 class Ghost(models.Model):
     ghost_name = models.CharField(max_length=100, primary_key=True)
@@ -14,6 +15,7 @@ class Ghost(models.Model):
 
     def __str__(self):
         return self.ghost_name
+    
 class Equipment(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     use = models.TextField()
@@ -21,3 +23,8 @@ class Equipment(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Ectoplasm(models.Model):
+    location = PlainLocationField(zoom=7)
+    quantity = models.PositiveIntegerField()
+    belong_to = models.ForeignKey(Ghost, on_delete=models.CASCADE)

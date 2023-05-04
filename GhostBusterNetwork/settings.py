@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     #other
     'rest_framework', #rest framework
     'drf_yasg', #swagger docs
+    'location_field.apps.DefaultConfig', #location-field in models
 
     #apps installed
     'accounts',
@@ -108,6 +109,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+LOCATION_FIELD = {
+    'provider.google.api': '//maps.google.com/maps/api/js?sensor=false',
+    # 'provider.google.api_key': '<PLACE YOUR API KEY HERE>',
+    'provider.google.api_libraries': '',
+    'provider.google.map.type': 'ROADMAP',
 }
 
 MIDDLEWARE = [
