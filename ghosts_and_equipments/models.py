@@ -28,3 +28,6 @@ class Ectoplasm(models.Model):
     location = PlainLocationField(zoom=7)
     quantity = models.PositiveIntegerField()
     belong_to = models.ForeignKey(Ghost, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Ectoplasmic remains to " + self.belong_to.ghost_name
