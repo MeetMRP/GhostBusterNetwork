@@ -56,6 +56,8 @@ urlpatterns = [
     #router urls
     path('', include(Router.urls), name='routers'),
 
+    path('pickel/', MViews.PickleApi.as_view(), name='pickle'),
+
 
     path('admin/', admin.site.urls),
     path('account/', include('accounts.urls'), name='accounts'),
